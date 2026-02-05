@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Quản lý Cookie Username đẹp hơn</title>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      /* --- CẤU HÌNH CHUNG --- */
+      body {
+        font-family: "Poppins", sans-serif; /* Sử dụng font mới */
+        background-color: #f4f7f6; /* Màu nền xám nhẹ */
+        padding: 40px 20px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        color: #333;
+      }
+
+      /* --- KHUNG CHỨA CHÍNH (Dạng thẻ) --- */
+      .container {
+        background-color: #ffffff;
+        width: 100%;
+        max-width: 450px;
+        padding: 35px;
+        border-radius: 15px; /* Bo tròn góc nhiều hơn */
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.1); /* Đổ bóng tạo chiều sâu */
+        text-align: center;
+      }
+
+      h3 {
+        color: #2c3e50;
+        margin-bottom: 25px;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+      }
+
+      /* --- Ô NHẬP LIỆU --- */
+      input[type="text"] {
+        padding: 12px 15px;
+        width: 80%;
+        margin-bottom: 20px;
+        border: 2px solid #eee;
+        border-radius: 8px;
+        font-family: inherit;
+        font-size: 16px;
+        transition: all 0.3s ease; /* Hiệu ứng mượt mà */
+        outline: none;
+      }
+
+      /* Hiệu ứng khi click vào ô nhập */
+      input[type="text"]:focus {
+        border-color: #3498db;
+        box-shadow: 0 0 8px rgba(52, 152, 219, 0.3);
+      }
+
+      /* --- CÁC NÚT BẤM (BUTTONS) --- */
+      button {
+        padding: 12px 24px;
+        cursor: pointer;
+        margin: 5px;
+        border: none;
+        border-radius: 8px;
+        font-family: inherit;
+        font-weight: 600;
+        font-size: 14px;
+        transition: all 0.3s ease; /* Hiệu ứng hover mượt */
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      /* Nút Lưu và Cập nhật (Màu xanh dương chủ đạo) */
+      #btnSave,
+      #btnUpdate {
+        background-color: #3498db;
+        color: white;
+        width: 80%; /* Nút chính to hơn */
+      }
+
+      #btnSave:hover,
+      #btnUpdate:hover {
+        background-color: #2980b9;
+        transform: translateY(-2px); /* Nút nổi lên nhẹ khi di chuột */
+      }
+
+      /* --- KHU VỰC LỜI CHÀO --- */
+      #welcome-section {
+        display: none; /* Ẩn mặc định */
+        background: #e8f8f5; /* Nền xanh ngọc nhạt */
+        padding: 20px;
+        border-radius: 12px;
+        margin-top: 20px;
+        border: 1px solid #d1f2eb;
+        animation: fadeIn 0.5s ease-in-out; /* Hiệu ứng hiện ra từ từ */
+      }
+
+      #welcomeMsg {
+        color: #16a085; /* Màu chữ xanh ngọc đậm */
+        margin-bottom: 20px;
+        font-weight: 600;
+      }
+
+      /* Nút Đổi tên (Màu xám trung tính) */
+      .btn-edit {
+        background-color: #95a5a6;
+        color: white;
+      }
+      .btn-edit:hover {
+        background-color: #7f8c8d;
+        transform: translateY(-2px);
+      }
+
+      /* Nút Xóa (Màu đỏ cảnh báo) */
+      .btn-delete {
+        background-color: #e74c3c;
+        color: white;
+      }
+      .btn-delete:hover {
+        background-color: #c0392b;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 8px rgba(231, 76, 60, 0.4);
+      }
+
+      /* Class tiện ích để ẩn hiện */
+      .hidden {
+        display: none !important;
+      }
+
+      /* Hiệu ứng animation đơn giản */
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(10px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h3>Quản lý Cookie Demo</h3>
+
+      <div id="form-section">
+        <input
+          type="text"
+          id="nameInput"
+          placeholder="Nhập tên của bạn vào đây..."
+          autocomplete="off"
+        />
+        <br />
+        <button id="btnSave" onclick="handleSave()">LƯU TÊN</button>
+        <button id="btnUpdate" class="hidden" onclick="handleSave()">
+          CẬP NHẬT TÊN MỚI
+        </button>
+      </div>
+
+      <div id="welcome-section">
+        <h2 id="welcomeMsg"></h2>
+        <button class="btn-edit" onclick="showUpdateForm()">Đổi tên</button>
+        <button class="btn-delete" onclick="handleDelete()">
+          Xóa thông tin
+        </button>
+      </div>
+    </div>
+
+    <script>
+      // --- GIỮ NGUYÊN TOÀN BỘ PHẦN JAVASCRIPT CŨ ---
+      function setCookie(cname, cvalue, exdays) {
+        const d = new Date();
+        d.setTime(d.getTime() + exdays * 24 * 60 * 60 * 1000);
+        let expires = "expires=" + d.toUTCString();
+        document.cookie = cname + "=" + cvalue + ";" + expires + ";path=/";
+      }
+
+      function getCookie(cname) {
+        let name = cname + "=";
+        let ca = document.cookie.split(";");
+        for (let i = 0; i < ca.length; i++) {
+          let c = ca[i].trim();
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return "";
+      }
+
+      function deleteCookie(cname) {
+        document.cookie =
+          cname + "=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+      }
+
+      const formSection = document.getElementById("form-section");
+      const welcomeSection = document.getElementById("welcome-section");
+      const welcomeMsg = document.getElementById("welcomeMsg");
+      const nameInput = document.getElementById("nameInput");
+      const btnSave = document.getElementById("btnSave");
+      const btnUpdate = document.getElementById("btnUpdate");
+
+      window.onload = function () {
+        checkUser();
+      };
+
+      function checkUser() {
+        let user = getCookie("username");
+        if (user != "") {
+          welcomeMsg.innerText = "Xin chào, " + user + "!"; // Thêm dấu chấm than cho hào hứng :D
+          formSection.classList.add("hidden"); // Sử dụng class hidden thay vì style trực tiếp
+          welcomeSection.style.display = "block";
+        } else {
+          formSection.classList.remove("hidden");
+          welcomeSection.style.display = "none";
+          btnSave.classList.remove("hidden");
+          btnUpdate.classList.add("hidden");
+          nameInput.value = "";
+        }
+      }
+
+      function handleSave() {
+        let name = nameInput.value;
+        if (name.trim() === "") {
+          // Thay alert bằng hiệu ứng rung lắc nhẹ input (nâng cao - tùy chọn)
+          nameInput.style.borderColor = "#e74c3c";
+          setTimeout(() => {
+            nameInput.style.borderColor = "#eee";
+          }, 500);
+          nameInput.focus();
+          return;
+        }
+        setCookie("username", name, 7);
+        checkUser();
+      }
+
+      function showUpdateForm() {
+        formSection.classList.remove("hidden");
+        welcomeSection.style.display = "none"; // Ẩn phần welcome đi khi sửa
+        btnSave.classList.add("hidden");
+        btnUpdate.classList.remove("hidden");
+        nameInput.value = getCookie("username");
+        nameInput.focus();
+      }
+
+      function handleDelete() {
+        if (
+          confirm(
+            "Bạn có chắc chắn muốn xóa thông tin? Hành động này không thể hoàn tác.",
+          )
+        ) {
+          deleteCookie("username");
+          checkUser();
+        }
+      }
+    </script>
+  </body>
+</html>
